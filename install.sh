@@ -10,16 +10,9 @@ if test -f "/etc/init.d/filamentsync"; then
 fi
 
 #create data dir
-mkdir -p /usr/share/Filament-Sync
+mkdir -p data
 
 #install and enable startup service
-if test -f "/opt/lib/sftp-server"; then
-    echo "SFTP already installed"
-else
-    echo "Installing SFTP"
-    opkg install ${SERVICEDIRECTORY}/openssh-sftp-server_10.0_p1-1_armv7-3.2.ipk
-fi
-
 cp ${SERVICEDIRECTORY}/filamentsync /etc/init.d/
 chmod +x ${SERVICEDIRECTORY}/sync.sh
 chmod +x /etc/init.d/filamentsync
@@ -51,4 +44,5 @@ EOF
 else
     echo "Configuration already exists in $CONFFILE. No changes made."
 fi
+
 /etc/init.d/moonraker restart

@@ -1,7 +1,7 @@
 #!/bin/sh
 
 CREALITYDIRECTORY="/mnt/UDISK/creality/userdata/box"
-SYNCDIRECTORY="/usr/share/Filament-Sync"
+SYNCDIRECTORY="/mnt/UDISK/printer_data/config/Filament-Sync-Service/data"
 
 while :
 do
