@@ -10,6 +10,7 @@ if test -f "/etc/init.d/filamentsync"; then
 fi
 
 #create data dir
+cd "$(dirname "$0")"
 mkdir -p data
 
 #install and enable startup service
