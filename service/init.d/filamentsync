@@ -1,0 +1,28 @@
+#!/bin/sh /etc/rc.common
+
+START=95
+USE_PROCD=1
+
+# OpenWrt procd service wrapper for Filament-Sync-Service.
+#
+# The actual sync loop script path is stored in /etc/filamentsync.path
+# (written by install.sh). We fall back to the Creality Hi default.
+
+start_service() {
+  PATH_FILE="/etc/filamentsync.path"
+  SYNCSCRIPT_DEFAULT="/mnt/UDISK/printer_data/config/Filament-Sync-Service/service/sync.sh"
+  SYNCSCRIPT="$SYNCSCRIPT_DEFAULT"
+
+  if [ -f "$PATH_FILE" ]; then
+    # Best effort; if unreadable, keep default.
+    TMP="$(cat "$PATH_FILE" 2>/dev/null || true)"
+    if [ -n "$TMP" ]; then
+      SYNCSCRIPT="$TMP"
+    fi
+  fi
+
+  procd_open_instance
+  procd_set_param command sh "$SYNCSCRIPT"
+  procd_set_param respawn
+  procd_close_instance
+}
