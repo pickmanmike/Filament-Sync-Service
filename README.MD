@@ -1,28 +1,30 @@
-[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/P5P11AL9ZR)
+Filament-Sync-Service (Creality Hi friendly fork)
 
-# Filament Sync Service
-This is the printer service that syncs custom profiles with the printer database. Since Creality replaces the database with defaults on boot, this service will automatically restore your custom database when you power up the printer.
+This is a **fork** of the original Filament-Sync-Service project.
 
-### Note to K1 users
+It’s a small *printer-side* companion for **Filament-Sync**:
 
-Not working with K1 series printers at the moment. If you have experience with creating startup services on the K1 firmware please contact me. I don't own a K1 to test with.
+- **Filament-Sync** (PC side) generates / uploads Creality material database files.
+- **Filament-Sync-Service** (printer side) copies those files into the Creality Hi “live” database folder so the printer UI / CFS can actually see them.
 
-## Installation
+This fork mainly adds:
 
-Download and unzip the [Latest Release](https://github.com/HurricanePrint/Filament-Sync-Service/releases/latest)
+- Creality Hi friendly install behavior
+- Guardrails to avoid overwriting the live database with tiny files
+- Slightly more logging / configurability
 
-Open Fluidd in your browser ```<your.printer.ip>:4408```
+## Install (Creality Hi)
 
-On the left side select Configuration {...} 
+1. Copy the repo folder to the printer:
 
-Click the + then Upload Folder
+   - Destination: `/mnt/UDISK/printer_data/config/Filament-Sync-Service`
 
-Select the Filament-Sync-Service folder you extracted
+   WinSCP (SCP) works well, or any `scp` client.
 
 ### In Terminal/Powershell on your pc
 
 Connect to your printer with ssh ```root@<your.printer.ip>```
-password ```creality_2024```
+password ```Creality2024```
 
 Install the sync service
 ```
@@ -32,14 +34,30 @@ cd /mnt/UDISK/printer_data/config/Filament-Sync-Service/
 sh /install.sh
 ```
 
-If you installed manually you may need to repair the repo before Fluidd will show if there are updates
+## Configure
 
-Go into Fluidd Settings, scroll all the way to the bottom **Software Updates** section and click **Recover**
+Edit `service/sync.sh`:
 
+- `CREALITYDIRECTORY` (default: `/mnt/UDISK/creality/userdata/box`)
+- `SYNCDIRECTORY` (default: `/usr/share/Filament-Sync`)
+- `INTERVAL_SECONDS` (default: `15`)
+- `MIN_DB_BYTES` (default: `50000`)
 
-#### All done! Continue to install Filament-Sync on your pc
-### [Filament-Sync](https://github.com/HurricanePrint/Filament-Sync)
+After edits, restart:
 
-## Updating
+```sh
+/etc/init.d/filamentsync restart || ( /etc/init.d/filamentsync stop; /etc/init.d/filamentsync start )
+```
 
-Moonraker now handles checking for and downloading updates. If there is an update there will be a notification in Fluidd.
+## What this fork intentionally does NOT do
+
+Some Klipper setups integrate with Moonraker’s `update_manager` so Fluidd/Mainsail can one-click update.
+
+On appliance firmware builds (including many Creality variants), `update_manager` behavior can be patched, incomplete, or brittle. This fork **does not modify** Moonraker configs by default.
+
+#### All done! Continue to install Filament-Sync on your PC via the companion fork of Filamen-Sync for Creality Print 6 & 7 and the Creality Hi
+### [Filament-Sync](https://github.com/pickmanmike/Filament-Sync)
+
+## Credit
+
+All original credit goes to HurricanePrint for Filament-Sync and Filament-Sync-Service.
